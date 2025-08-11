@@ -13,13 +13,11 @@ st.set_page_config(
 st.markdown("""
 <style>
     :root {
-        /* Primary Sumiputeh Steel Brand Colors */
         --sumiputeh-blue: #005b96;
         --sumiputeh-steel: #a7b8c8;
         --sumiputeh-accent: #e74c3c;
         --sumiputeh-dark: #2c3e50;
         
-        /* Derived Theme Colors */
         --primary-color: var(--sumiputeh-blue);
         --secondary-color: #f5f7fa;
         --text-color: var(--sumiputeh-dark);
@@ -47,7 +45,6 @@ st.markdown("""
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    /* Steel-inspired header with gradient */
     .header-container {
         background: linear-gradient(135deg, var(--sumiputeh-blue) 0%, var(--sumiputeh-dark) 100%);
         color: white;
@@ -57,18 +54,6 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    .header-container h1 {
-        margin-bottom: 0.25rem;
-        font-weight: 700;
-    }
-
-    .header-container h3 {
-        margin-top: 0;
-        font-weight: 400;
-        opacity: 0.9;
-    }
-
-    /* Steel-themed checkboxes */
     .stCheckbox > label {
         background-color: var(--card-bg);
         padding: 0.5rem 1rem;
@@ -78,12 +63,6 @@ st.markdown("""
         transition: all 0.2s ease;
     }
 
-    .stCheckbox > label:hover {
-        background-color: #e8f0fe;
-        transform: translateX(4px);
-    }
-
-    /* Industrial-style buttons */
     .stButton button {
         background: linear-gradient(to bottom, var(--sumiputeh-blue) 0%, #004578 100%);
         color: white;
@@ -93,16 +72,8 @@ st.markdown("""
         border-radius: 6px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         transition: all 0.3s ease;
-        border-bottom: 2px solid rgba(0,0,0,0.1);
     }
 
-    .stButton button:hover {
-        background: linear-gradient(to bottom, #0066b3 0%, #005b96 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-
-    /* Steel-themed section boxes */
     .section-box {
         background-color: var(--card-bg);
         border-radius: 8px;
@@ -113,27 +84,6 @@ st.markdown("""
         border-top: 3px solid var(--sumiputeh-steel);
     }
 
-    /* Industrial-style expanders */
-    .stExpander {
-        background-color: var(--card-bg);
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        margin-bottom: 1rem;
-    }
-
-    .stExpander .streamlit-expanderHeader {
-        font-weight: 600;
-        color: var(--text-color);
-        background-color: rgba(0,91,150,0.05);
-        padding: 0.75rem 1rem;
-        border-radius: 8px 8px 0 0;
-    }
-
-    .stExpander .streamlit-expanderContent {
-        padding: 1rem;
-    }
-
-    /* Status messages */
     .success-message {
         background-color: rgba(39, 174, 96, 0.1);
         color: var(--text-color);
@@ -142,34 +92,10 @@ st.markdown("""
         margin: 1rem 0;
         border-left: 4px solid var(--success-color);
     }
-
-    .warning-message {
-        background-color: rgba(231, 76, 60, 0.1);
-        color: var(--text-color);
-        padding: 1rem;
-        border-radius: 6px;
-        margin: 1rem 0;
-        border-left: 4px solid var(--warning-color);
-    }
-
-    /* Input styling */
-    .stTextInput input, .stSelectbox select, 
-    .stDateInput input, .stTextArea textarea {
-        background-color: var(--card-bg) !important;
-        color: var(--text-color) !important;
-        border: 1px solid var(--border-color) !important;
-        border-radius: 6px !important;
-        padding: 0.5rem 0.75rem !important;
-    }
-
-    /* Footer divider */
-    .stHorizontalBlock [data-testid="column"] {
-        align-items: center;
-    }
 </style>
 """, unsafe_allow_html=True)
 
-# App header with Sumiputeh branding
+# App header
 header = st.container()
 with header:
     header.markdown("""
@@ -192,130 +118,78 @@ with st.container():
         with col3:
             operator_name = st.text_input("👷 Operator Name")
 
-# --- Pre-Changeover Shutdown ---
+# --- Length Adjustment Procedures ---
 with st.container():
-    with st.expander("### 2. Pre-Changeover Shutdown", expanded=True):
-        col1, col2 = st.columns(2)
-        with col1:
-            pre_shutdown = {
-                "Stop production and clear the line": st.checkbox("🛑 Stop production and clear the line"),
-                "Power off machine & follow LOTO": st.checkbox("🔌 Power off machine & follow LOTO")
-            }
-        with col2:
-            pre_shutdown["Inform QC of changeover"] = st.checkbox("📢 Inform QC of changeover")
+    with st.expander("### 2. Length Adjustment Procedures (Steps 1-4)", expanded=True):
+        length_adjustment = {
+            "1. Change/Adjust stopper for length Shell Tube": st.checkbox("1. Change/Adjust stopper for length Shell Tube"),
+            "2. Adjust length delivery Shell Tube to End Facing/Chamfering": st.checkbox("2. Adjust length delivery Shell Tube to End Facing/Chamfering"),
+            "3. Adjust length End Facing/Chamfering": st.checkbox("3. Adjust length End Facing/Chamfering"),
+            "4. Change Expander Die": st.checkbox("4. Change Expander Die")
+        }
 
-# --- Tooling & Die Change ---
+# --- 3-Point Die Changeover ---
 with st.container():
-    with st.expander("### 3. Tooling & Die Change", expanded=True):
-        cols = st.columns(2)
-        with cols[0]:
-            tooling_die = {
-                "Remove previous dies/tooling": st.checkbox("🔧 Remove previous dies/tooling"),
-                "Clean die seating area": st.checkbox("🧹 Clean die seating area")
-            }
-        with cols[1]:
-            tooling_die["Install new dies"] = st.checkbox("🛠️ Install new dies")
-            tooling_die["Tighten and secure dies to torque"] = st.checkbox("🔩 Tighten and secure dies to torque")
+    with st.expander("### 3. 3-Point Die Changeover (Steps 5-8)", expanded=True):
+        three_point_die = {
+            "5. Loosen and remove the screw lock bolts on the 3-Point Die": st.checkbox("5. Loosen and remove the screw lock bolts on the 3-Point Die"),
+            "6. Remove the 3-Point Die using a forklift from rack to Press Machine": st.checkbox("6. Remove the 3-Point Die using a forklift from rack to Press Machine"),
+            "7. Take another 3-Point Die using a forklift from rack to Press Machine": st.checkbox("7. Take another 3-Point Die using a forklift from rack to Press Machine"),
+            "8. Align the 3-Point Die on the press machine, then securely tighten the screw lock bolts": st.checkbox("8. Align the 3-Point Die on the press machine, then securely tighten the screw lock bolts")
+        }
 
-# --- Machine Adjustment ---
+# --- Burring Die Changeover ---
 with st.container():
-    with st.expander("### 4. Machine Adjustment", expanded=True):
-        cols = st.columns(2)
-        with cols[0]:
-            machine_adjust = {
-                "Adjust press stroke & height": st.checkbox("📏 Adjust press stroke & height"),
-                "Adjust roller guides & clamps": st.checkbox("⚙️ Adjust roller guides & clamps")
-            }
-        with cols[1]:
-            machine_adjust["Update feeder settings"] = st.checkbox("🔄 Update feeder settings")
-            machine_adjust["Calibrate ID stamping machine"] = st.checkbox("🎯 Calibrate ID stamping machine")
+    with st.expander("### 4. Burring Die Changeover (Steps 9-14)", expanded=True):
+        burring_die = {
+            "9. Loosen and remove the screw lock bolts on the Burring Die": st.checkbox("9. Loosen and remove the screw lock bolts on the Burring Die"),
+            "10. Remove the Burring Die using a forklift and place it on the rack": st.checkbox("10. Remove the Burring Die using a forklift and place it on the rack"),
+            "11. Take another Burring Die using a forklift from rack to Press Machine": st.checkbox("11. Take another Burring Die using a forklift from rack to Press Machine"),
+            "12. Align the Burring Die on the press machine then securely tighten the screw lock bolts": st.checkbox("12. Align the Burring Die on the press machine then securely tighten the screw lock bolts"),
+            "13. Adjust the Possit on the Press Machine for the Burring Die according to the provided sample": st.checkbox("13. Adjust the Possit on the Press Machine for the Burring Die according to the provided sample"),
+            "14. QC check": st.checkbox("14. QC check")
+        }
 
-# --- Quality Setup Check ---
+# --- Documentation ---
 with st.container():
-    with st.expander("### 5. Quality Setup Check", expanded=True):
-        cols = st.columns(2)
-        with cols[0]:
-            quality_check = {
-                "Run first-off piece and measure dimensions": st.checkbox("📐 Run first-off piece and measure dimensions"),
-                "Check surface finish & stamping": st.checkbox("🔍 Check surface finish & stamping")
-            }
-        with cols[1]:
-            quality_check["Verify fit with upper shell"] = st.checkbox("⚖️ Verify fit with upper shell")
-            quality_check["Approve for mass production"] = st.checkbox("✅ Approve for mass production")
-
-# --- Documentation & Handover ---
-with st.container():
-    with st.expander("### 6. Documentation & Handover", expanded=True):
-        cols = st.columns(2)
-        with cols[0]:
-            handover = {
-                "Update production log": st.checkbox("📝 Update production log"),
-                "Inform next shift": st.checkbox("🗣️ Inform next shift")
-            }
-        with cols[1]:
-            handover["Store old dies/tooling"] = st.checkbox("📦 Store old dies/tooling")
-
-# --- Remarks ---
-with st.container():
-    with st.expander("### 7. Remarks", expanded=True):
+    with st.expander("### 5. Documentation", expanded=True):
         remarks = st.text_area("📝 Notes / Issues Found", height=100,
-                            placeholder="Enter any additional notes or issues encountered during changeover...")
+                             placeholder="Enter any additional notes or issues encountered during changeover...")
 
 # --- Save Data ---
 st.markdown("---")
-footer_cols = st.columns([1, 2, 1])
-with footer_cols[1]:
-    if st.button("✅ Submit Checklist", use_container_width=True):
-        if not all([date, shift, product_from, product_to, operator_name]):
-            st.markdown('<div class="warning-message">⚠️ Please fill all required fields in Changeover Details</div>', unsafe_allow_html=True)
-        else:
-            data = {
-                "Date": [date],
-                "Shift": [shift],
-                "From Product": [product_from],
-                "To Product": [product_to],
-                "Operator": [operator_name],
-                **pre_shutdown,
-                **tooling_die,
-                **machine_adjust,
-                **quality_check,
-                **handover,
-                "Remarks": [remarks],
-                "Timestamp": [datetime.now()]
-            }
+if st.button("✅ Submit Checklist", use_container_width=True):
+    if not all([date, shift, product_from, product_to, operator_name]):
+        st.warning("⚠️ Please fill all required fields in Changeover Details")
+    else:
+        data = {
+            "Date": [date],
+            "Shift": [shift],
+            "From Product": [product_from],
+            "To Product": [product_to],
+            "Operator": [operator_name],
+            **length_adjustment,
+            **three_point_die,
+            **burring_die,
+            "Remarks": [remarks],
+            "Timestamp": [datetime.now()]
+        }
 
-            df = pd.DataFrame(data)
+        df = pd.DataFrame(data)
 
-            try:
-                df_existing = pd.read_csv("checklist_records.csv")
-                df = pd.concat([df_existing, df], ignore_index=True)
-            except FileNotFoundError:
-                pass
+        try:
+            df_existing = pd.read_csv("checklist_records.csv")
+            df = pd.concat([df_existing, df], ignore_index=True)
+        except FileNotFoundError:
+            pass
 
-            df.to_csv("checklist_records.csv", index=False)
-            st.markdown('<div class="success-message">✔️ Checklist submitted successfully!</div>', unsafe_allow_html=True)
+        df.to_csv("checklist_records.csv", index=False)
+        st.markdown('<div class="success-message">✔️ Checklist submitted successfully!</div>', unsafe_allow_html=True)
 
-            try:
-                with footer_cols[2]:
-                    st.download_button(
-                        "📥 Download All Checklists",
-                        data=df.to_csv(index=False),
-                        file_name="checklist_records.csv",
-                        mime="text/csv",
-                        use_container_width=True
-                    )
-            except:
-                pass
-
-with footer_cols[0]:
-    try:
-        df_existing = pd.read_csv("checklist_records.csv")
         st.download_button(
             "📥 Download All Checklists",
-            data=df_existing.to_csv(index=False),
+            data=df.to_csv(index=False),
             file_name="checklist_records.csv",
             mime="text/csv",
             use_container_width=True
         )
-    except FileNotFoundError:
-        st.warning("No records found")
