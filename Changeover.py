@@ -9,21 +9,30 @@ st.set_page_config(
     page_icon="📋"
 )
 
-# Custom CSS for professional styling with light/dark mode support
+# Sumiputeh Steel Centre Color Theme
 st.markdown("""
 <style>
     :root {
-        --primary-color: #4a7dff;
-        --secondary-color: #f0f2f6;
-        --text-color: #2c3e50;
+        /* Primary Sumiputeh Steel Brand Colors */
+        --sumiputeh-blue: #005b96;
+        --sumiputeh-steel: #a7b8c8;
+        --sumiputeh-accent: #e74c3c;
+        --sumiputeh-dark: #2c3e50;
+        
+        /* Derived Theme Colors */
+        --primary-color: var(--sumiputeh-blue);
+        --secondary-color: #f5f7fa;
+        --text-color: var(--sumiputeh-dark);
         --background-color: #ffffff;
-        --card-bg: #f8f9fa;
-        --border-color: #e0e0e0;
+        --card-bg: var(--secondary-color);
+        --border-color: #d6dbdf;
+        --success-color: #27ae60;
+        --warning-color: var(--sumiputeh-accent);
     }
 
     @media (prefers-color-scheme: dark) {
         :root {
-            --primary-color: #5a8cff;
+            --primary-color: #1a73e8;
             --secondary-color: #2d3748;
             --text-color: #f8f9fa;
             --background-color: #1a202c;
@@ -35,94 +44,138 @@ st.markdown("""
     body {
         color: var(--text-color);
         background-color: var(--background-color);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    .stTextInput input, .stSelectbox select, .stDateInput input, .stTextArea textarea {
-        background-color: var(--secondary-color) !important;
-        color: var(--text-color) !important;
-        border-color: var(--border-color) !important;
-    }
-
-    .stMarkdown h3 {
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 5px;
-        color: var(--text-color);
-    }
-
-    .stButton button {
-        background-color: var(--primary-color);
+    /* Steel-inspired header with gradient */
+    .header-container {
+        background: linear-gradient(135deg, var(--sumiputeh-blue) 0%, var(--sumiputeh-dark) 100%);
         color: white;
-        font-weight: bold;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .header-container h1 {
+        margin-bottom: 0.25rem;
+        font-weight: 700;
+    }
+
+    .header-container h3 {
+        margin-top: 0;
+        font-weight: 400;
+        opacity: 0.9;
+    }
+
+    /* Steel-themed checkboxes */
+    .stCheckbox > label {
+        background-color: var(--card-bg);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border-left: 4px solid var(--sumiputeh-steel);
+        margin-bottom: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .stCheckbox > label:hover {
+        background-color: #e8f0fe;
+        transform: translateX(4px);
+    }
+
+    /* Industrial-style buttons */
+    .stButton button {
+        background: linear-gradient(to bottom, var(--sumiputeh-blue) 0%, #004578 100%);
+        color: white;
+        font-weight: 600;
         border: none;
-        padding: 10px 24px;
-        border-radius: 5px;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         transition: all 0.3s ease;
+        border-bottom: 2px solid rgba(0,0,0,0.1);
     }
 
     .stButton button:hover {
-        background-color: var(--primary-color);
-        opacity: 0.9;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        background: linear-gradient(to bottom, #0066b3 0%, #005b96 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 
-    .success-message {
-        background-color: rgba(40, 167, 69, 0.2);
-        color: var(--text-color);
-        padding: 15px;
-        border-radius: 5px;
-        margin: 15px 0;
-        border-left: 4px solid #28a745;
-    }
-
-    .warning-message {
-        background-color: rgba(220, 53, 69, 0.2);
-        color: var(--text-color);
-        padding: 15px;
-        border-radius: 5px;
-        margin: 15px 0;
-        border-left: 4px solid #dc3545;
-    }
-
+    /* Steel-themed section boxes */
     .section-box {
         background-color: var(--card-bg);
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         border: 1px solid var(--border-color);
+        border-top: 3px solid var(--sumiputeh-steel);
     }
 
-    .header-container {
-        padding-bottom: 15px;
-        border-bottom: 1px solid var(--border-color);
-        margin-bottom: 20px;
-    }
-
+    /* Industrial-style expanders */
     .stExpander {
         background-color: var(--card-bg);
-        border-radius: 10px;
+        border-radius: 8px;
         border: 1px solid var(--border-color);
+        margin-bottom: 1rem;
     }
 
     .stExpander .streamlit-expanderHeader {
         font-weight: 600;
         color: var(--text-color);
+        background-color: rgba(0,91,150,0.05);
+        padding: 0.75rem 1rem;
+        border-radius: 8px 8px 0 0;
     }
 
-    .checkbox-item {
-        margin-bottom: 8px;
+    .stExpander .streamlit-expanderContent {
+        padding: 1rem;
+    }
+
+    /* Status messages */
+    .success-message {
+        background-color: rgba(39, 174, 96, 0.1);
+        color: var(--text-color);
+        padding: 1rem;
+        border-radius: 6px;
+        margin: 1rem 0;
+        border-left: 4px solid var(--success-color);
+    }
+
+    .warning-message {
+        background-color: rgba(231, 76, 60, 0.1);
+        color: var(--text-color);
+        padding: 1rem;
+        border-radius: 6px;
+        margin: 1rem 0;
+        border-left: 4px solid var(--warning-color);
+    }
+
+    /* Input styling */
+    .stTextInput input, .stSelectbox select, 
+    .stDateInput input, .stTextArea textarea {
+        background-color: var(--card-bg) !important;
+        color: var(--text-color) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 6px !important;
+        padding: 0.5rem 0.75rem !important;
+    }
+
+    /* Footer divider */
+    .stHorizontalBlock [data-testid="column"] {
+        align-items: center;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# App header with professional layout
+# App header with Sumiputeh branding
 header = st.container()
 with header:
     header.markdown("""
     <div class='header-container'>
-        <h1 style='margin-bottom:0;color:var(--text-color)'>📋 Shell Tube Line – Changeover Checklist</h1>
-        <h3 style='margin-top:0;color:var(--text-color)'>Sumiputeh Steel Centre Sdn. Bhd.</h3>
+        <h1>📋 Shell Tube Line – Changeover Checklist</h1>
+        <h3>Sumiputeh Steel Centre Sdn. Bhd.</h3>
     </div>
     """, unsafe_allow_html=True)
 
@@ -206,7 +259,7 @@ with st.container():
 with st.container():
     with st.expander("### 7. Remarks", expanded=True):
         remarks = st.text_area("📝 Notes / Issues Found", height=100,
-                             placeholder="Enter any additional notes or issues encountered during changeover...")
+                            placeholder="Enter any additional notes or issues encountered during changeover...")
 
 # --- Save Data ---
 st.markdown("---")
