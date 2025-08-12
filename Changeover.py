@@ -1,26 +1,17 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime, time, timedelta
+from datetime import datetime, time
 from PIL import Image
 import requests
 from io import BytesIO
 import os
-
-# Check and install required packages
-try:
-    import plotly.express as px
-except ImportError:
-    import subprocess
-    import sys
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "plotly"])
-    import plotly.express as px
 
 # Configure page
 st.set_page_config(
     page_title="Shell Tube Changeover",
     layout="wide",
     page_icon="📋",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="auto"
 )
 
 # Load Sumiputeh logo
@@ -32,7 +23,7 @@ def load_logo():
     except:
         return None
 
-# Complete translation dictionaries
+# Complete translation dictionaries with Bengali added
 def get_translations():
     return {
         "en": {
@@ -76,26 +67,7 @@ def get_translations():
             "invalid_time": "⚠️ Please enter time in HH:MM AM/PM format (e.g., 08:30 AM)",
             "success": "✔️ Submitted successfully!",
             "download": "📥 Download Records",
-            "monitoring_title": "📊 Changeover Monitoring",
-            "time_analysis": "Time Analysis",
-            "duration_distribution": "Duration Distribution",
-            "operator_performance": "Operator Performance",
-            "product_change_frequency": "Product Change Frequency",
-            "filter_date_range": "Filter by Date Range",
-            "filter_operator": "Filter by Operator",
-            "filter_product": "Filter by Product",
-            "all_operators": "All Operators",
-            "all_products": "All Products",
-            "avg_duration": "Average Duration",
-            "total_changeovers": "Total Changeovers",
-            "recent_activities": "Recent Activities",
-            "export_report": "📄 Export Report",
-            "time_metrics": "Time Metrics",
-            "quick_stats": "Quick Stats",
-            "trend_analysis": "Trend Analysis",
-            "efficiency_analysis": "Efficiency Analysis",
-            "no_data_warning": "No changeover data available yet. Please submit some records first.",
-            "no_filter_results": "No records match your filters. Please adjust your selection."
+            "no_data": "No records found"
         },
         "ms": {
             "title": "📋 Tukar Model Shell Tube",
@@ -138,26 +110,7 @@ def get_translations():
             "invalid_time": "⚠️ Sila masukkan masa dalam format HH:MM AM/PM (cth: 08:30 AM)",
             "success": "✔️ Berjaya dihantar!",
             "download": "📥 Muat Turun Rekod",
-            "monitoring_title": "📊 Pemantauan Pertukaran",
-            "time_analysis": "Analisis Masa",
-            "duration_distribution": "Taburan Tempoh",
-            "operator_performance": "Prestasi Operator",
-            "product_change_frequency": "Kekerapan Tukar Produk",
-            "filter_date_range": "Tapis mengikut Julat Tarikh",
-            "filter_operator": "Tapis mengikut Operator",
-            "filter_product": "Tapis mengikut Produk",
-            "all_operators": "Semua Operator",
-            "all_products": "Semua Produk",
-            "avg_duration": "Purata Tempoh",
-            "total_changeovers": "Jumlah Pertukaran",
-            "recent_activities": "Aktiviti Terkini",
-            "export_report": "📄 Eksport Laporan",
-            "time_metrics": "Metrik Masa",
-            "quick_stats": "Statistik Pantas",
-            "trend_analysis": "Analisis Trend",
-            "efficiency_analysis": "Analisis Kecekapan",
-            "no_data_warning": "Tiada data pertukaran tersedia. Sila hantar beberapa rekod terlebih dahulu.",
-            "no_filter_results": "Tiada rekod sepadan dengan penapis anda. Sila laraskan pilihan anda."
+            "no_data": "Tiada rekod dijumpai"
         },
         "bn": {
             "title": "📋 শেল টিউব পরিবর্তন",
@@ -200,26 +153,7 @@ def get_translations():
             "invalid_time": "⚠️ সময় HH:MM AM/PM ফরম্যাটে দিন (যেমন: 08:30 AM)",
             "success": "✔️ সফলভাবে জমা হয়েছে!",
             "download": "📥 রেকর্ড ডাউনলোড করুন",
-            "monitoring_title": "📊 পরিবর্তন পর্যবেক্ষণ",
-            "time_analysis": "সময় বিশ্লেষণ",
-            "duration_distribution": "সময়কাল বিতরণ",
-            "operator_performance": "অপারেটর কর্মক্ষমতা",
-            "product_change_frequency": "পণ্য পরিবর্তনের ফ্রিকোয়েন্সি",
-            "filter_date_range": "তারিখের পরিসর দ্বারা ফিল্টার করুন",
-            "filter_operator": "অপারেটর দ্বারা ফিল্টার করুন",
-            "filter_product": "পণ্য দ্বারা ফিল্টার করুন",
-            "all_operators": "সমস্ত অপারেটর",
-            "all_products": "সমস্ত পণ্য",
-            "avg_duration": "গড় সময়কাল",
-            "total_changeovers": "মোট পরিবর্তন",
-            "recent_activities": "সাম্প্রতিক কার্যক্রম",
-            "export_report": "📄 রিপোর্ট এক্সপোর্ট করুন",
-            "time_metrics": "সময় মেট্রিক্স",
-            "quick_stats": "দ্রুত পরিসংখ্যান",
-            "trend_analysis": "ট্রেন্ড বিশ্লেষণ",
-            "efficiency_analysis": "দক্ষতা বিশ্লেষণ",
-            "no_data_warning": "কোনো পরিবর্তন ডেটা পাওয়া যায়নি। দয়া করে প্রথমে কিছু রেকর্ড জমা দিন।",
-            "no_filter_results": "আপনার ফিল্টারের সাথে মিলে যায় এমন কোনো রেকর্ড নেই। দয়া করে আপনার নির্বাচন সামঞ্জস্য করুন।"
+            "no_data": "কোন তথ্য পাওয়া যায়নি"
         }
     }
 
@@ -289,12 +223,10 @@ def load_css():
             border-left: 4px solid var(--sumiputeh-green);
         }
         
-        .metric-card {
-            background: white;
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            border-left: 4px solid var(--sumiputeh-green);
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
         }
         
         @media (max-width: 768px) {
@@ -309,7 +241,10 @@ def load_css():
             .stTimeInput input {
                 padding: 0.5rem !important;
             }
-            .stButton button {
+            .button-container {
+                flex-direction: column;
+            }
+            .button-container button {
                 width: 100% !important;
             }
         }
@@ -339,29 +274,38 @@ def format_time_for_display(time_obj):
     return ""
 
 def load_data():
-    """Load data from CSV or create empty DataFrame"""
+    """Load existing data or return empty DataFrame"""
     if os.path.exists("checklist_records.csv"):
-        df = pd.read_csv("checklist_records.csv")
-        # Convert string dates to datetime objects
-        if 'Date' in df.columns:
-            df['Date'] = pd.to_datetime(df['Date']).dt.date
-        if 'Start_Time' in df.columns:
-            df['Start_Time'] = pd.to_datetime(df['Start_Time'])
-        if 'End_Time' in df.columns:
-            df['End_Time'] = pd.to_datetime(df['End_Time'])
-        if 'Timestamp' in df.columns:
-            df['Timestamp'] = pd.to_datetime(df['Timestamp'])
-        return df
+        return pd.read_csv("checklist_records.csv")
     return pd.DataFrame()
 
-def save_data(df):
-    """Save DataFrame to CSV"""
-    df.to_csv("checklist_records.csv", index=False)
-
-def show_changeover_form(t):
-    """Display the changeover form"""
-    st.header("Changeover Form")
+def main():
+    # Load translations, CSS and logo
+    translations = get_translations()
+    load_css()
+    logo = load_logo()
     
+    # Language selection in sidebar
+    with st.sidebar:
+        st.markdown("### 🌐 Language Settings")
+        lang = st.selectbox("Select Language", ["English", "Bahasa Malaysia", "Bengali"], index=0)
+        lang_code = "en" if lang == "English" else "ms" if lang == "Bahasa Malaysia" else "bn"
+        t = translations[lang_code]
+
+    # Load existing data
+    df = load_data()
+
+    # Main responsive layout with logo
+    header_html = f"""
+    <div class='header-container'>
+        <img src="https://www.sumiputeh.com.my/website/public/img/logo/01.png" class="logo">
+        <h2 style="color: var(--sumiputeh-green);">{t['title']}</h2>
+        <h4 style="color: var(--sumiputeh-darkgreen);">{t['company']}</h4>
+    </div>
+    """
+    st.markdown(header_html, unsafe_allow_html=True)
+
+    # Dynamic layout
     col1, col2 = st.columns([1, 1])
     with col1:
         with st.expander(f"### {t['changeover_details']}", expanded=True):
@@ -386,8 +330,12 @@ def show_changeover_form(t):
     with st.expander(f"### {t['burring_die']}", expanded=False):
         for step in t['burring_steps']: st.checkbox(step)
 
-    # Submission
-    if st.button(f"✅ {t['submit']}", use_container_width=True, key="submit_button"):
+    # Button container for better layout
+    st.markdown('<div class="button-container">', unsafe_allow_html=True)
+    
+    # Submission button
+    submitted = False
+    if st.button(f"✅ {t['submit']}", use_container_width=True):
         time_started = parse_time_input(time_started_str)
         time_completed = parse_time_input(time_completed_str)
         
@@ -400,256 +348,39 @@ def show_changeover_form(t):
             end_datetime = datetime.combine(date, time_completed)
             duration = end_datetime - start_datetime
             
-            # Create new record
-            new_record = {
-                "Date": date,
-                "Start_Time": start_datetime,
-                "End_Time": end_datetime,
-                "Duration_Minutes": round(duration.total_seconds() / 60, 2),
-                "From_Part": product_from,
-                "To_Part": product_to,
-                "Operator": operator_name,
-                **{step: True for step in t['length_steps'] + t['three_point_steps'] + t['burring_steps']},
-                "Remarks": remarks,
-                "Timestamp": datetime.now(),
-                "Language": lang_code
+            new_data = {
+                "Date": [date],
+                "Start_Time": [start_datetime],
+                "End_Time": [end_datetime],
+                "Duration_Minutes": [round(duration.total_seconds() / 60, 2)],
+                "From_Part": [product_from],
+                "To_Part": [product_to],
+                "Operator": [operator_name],
+                **{step: [True] for step in t['length_steps'] + t['three_point_steps'] + t['burring_steps']},
+                "Remarks": [remarks],
+                "Timestamp": [datetime.now()],
+                "Language": [lang]
             }
             
-            # Load existing data and append new record
-            df = load_data()
-            df = pd.concat([df, pd.DataFrame([new_record])], ignore_index=True)
-            save_data(df)
-            
+            new_df = pd.DataFrame(new_data)
+            df = pd.concat([df, new_df], ignore_index=True)
+            df.to_csv("checklist_records.csv", index=False)
             st.markdown(f'<div class="success-message">{t["success"]} Duration: {duration}</div>', unsafe_allow_html=True)
-            st.balloons()
+            submitted = True
 
-def show_monitoring_dashboard(t):
-    """Display the monitoring dashboard"""
-    st.header(t['monitoring_title'])
-    df = load_data()
-    
-    # Show message if no data exists
-    if df.empty:
-        st.warning(t['no_data_warning'])
-        return
-    
-    # Filters
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        min_date = df['Date'].min() if not df.empty else datetime.now().date() - timedelta(days=30)
-        max_date = df['Date'].max() if not df.empty else datetime.now().date()
-        
-        date_range = st.date_input(
-            t['filter_date_range'],
-            value=[min_date, max_date],
-            min_value=min_date,
-            max_value=max_date,
-            key="date_range_filter"
+    # Always show download button
+    if not df.empty:
+        st.download_button(
+            t['download'],
+            data=df.to_csv(index=False),
+            file_name="checklist_records.csv",
+            mime="text/csv",
+            use_container_width=True
         )
-    
-    with col2:
-        operators = [t['all_operators']] + sorted(df['Operator'].dropna().unique().tolist())
-        selected_operator = st.selectbox(t['filter_operator'], operators, key="operator_filter")
-    
-    with col3:
-        all_products = pd.concat([df['From_Part'], df['To_Part']]).dropna().unique().tolist()
-        products = [t['all_products']] + sorted(all_products)
-        selected_product = st.selectbox(t['filter_product'], products, key="product_filter")
-    
-    # Apply filters
-    filtered_df = df.copy()
-    if len(date_range) == 2:
-        filtered_df = filtered_df[
-            (filtered_df['Date'] >= date_range[0]) & 
-            (filtered_df['Date'] <= date_range[1])
-        ]
-    if selected_operator != t['all_operators']:
-        filtered_df = filtered_df[filtered_df['Operator'] == selected_operator]
-    if selected_product != t['all_products']:
-        filtered_df = filtered_df[
-            (filtered_df['From_Part'] == selected_product) | 
-            (filtered_df['To_Part'] == selected_product)
-        ]
-    
-    # Show warning if no data after filtering
-    if filtered_df.empty:
-        st.warning(t['no_filter_results'])
-        return
-    
-    # Quick Stats
-    st.subheader(t['quick_stats'])
-    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    
-    avg_duration = filtered_df['Duration_Minutes'].mean()
-    total_changeovers = len(filtered_df)
-    unique_operators = filtered_df['Operator'].nunique()
-    product_changes = pd.concat([filtered_df['From_Part'], filtered_df['To_Part']]).nunique()
-    
-    kpi1.markdown(f"""
-    <div class='metric-card'>
-        <h3>{t['avg_duration']}</h3>
-        <h1>{f"{avg_duration:.1f} min" if not pd.isna(avg_duration) else "N/A"}</h1>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    kpi2.markdown(f"""
-    <div class='metric-card'>
-        <h3>{t['total_changeovers']}</h3>
-        <h1>{total_changeovers}</h1>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    kpi3.markdown(f"""
-    <div class='metric-card'>
-        <h3>Unique Operators</h3>
-        <h1>{unique_operators}</h1>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    kpi4.markdown(f"""
-    <div class='metric-card'>
-        <h3>Unique Products</h3>
-        <h1>{product_changes}</h1>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Visualizations
-    st.subheader(t['time_analysis'])
-    
-    tab1, tab2, tab3, tab4 = st.tabs([
-        t['duration_distribution'],
-        t['operator_performance'],
-        t['product_change_frequency'],
-        t['trend_analysis']
-    ])
-    
-    with tab1:
-        fig = px.histogram(
-            filtered_df, 
-            x='Duration_Minutes',
-            nbins=20,
-            title=t['duration_distribution'],
-            labels={'Duration_Minutes': 'Duration (minutes)'},
-            color_discrete_sequence=['#0b7d3e']
-        )
-        st.plotly_chart(fig, use_container_width=True)
-    
-    with tab2:
-        operator_stats = filtered_df.groupby('Operator').agg({
-            'Duration_Minutes': ['mean', 'count'],
-            'From_Part': 'nunique'
-        }).reset_index()
-        operator_stats.columns = ['Operator', 'Avg Duration', 'Changeover Count', 'Unique Products']
-        
-        fig = px.bar(
-            operator_stats,
-            x='Operator',
-            y='Avg Duration',
-            color='Changeover Count',
-            title=t['operator_performance'],
-            labels={'Avg Duration': 'Average Duration (minutes)'},
-            color_continuous_scale=['#e8f5e9', '#0b7d3e']
-        )
-        st.plotly_chart(fig, use_container_width=True)
-    
-    with tab3:
-        product_changes = pd.concat([
-            filtered_df['From_Part'].value_counts().rename('Changes From'),
-            filtered_df['To_Part'].value_counts().rename('Changes To')
-        ], axis=1).fillna(0)
-        product_changes['Total Changes'] = product_changes.sum(axis=1)
-        product_changes = product_changes.sort_values('Total Changes', ascending=False).head(20)
-        
-        fig = px.bar(
-            product_changes,
-            x=product_changes.index,
-            y=['Changes From', 'Changes To'],
-            title=t['product_change_frequency'],
-            labels={'value': 'Number of Changes', 'variable': 'Change Type'},
-            color_discrete_sequence=['#0b7d3e', '#fbc02d']
-        )
-        st.plotly_chart(fig, use_container_width=True)
-    
-    with tab4:
-        daily_trend = filtered_df.groupby('Date').agg({
-            'Duration_Minutes': 'mean',
-            'Start_Time': 'count'
-        }).reset_index()
-        daily_trend.columns = ['Date', 'Avg Duration', 'Changeover Count']
-        
-        fig = px.line(
-            daily_trend,
-            x='Date',
-            y=['Avg Duration', 'Changeover Count'],
-            title='Daily Trends',
-            labels={'value': 'Value', 'variable': 'Metric'},
-            color_discrete_sequence=['#0b7d3e', '#fbc02d']
-        )
-        st.plotly_chart(fig, use_container_width=True)
-    
-    # Recent Activities Table
-    st.subheader(t['recent_activities'])
-    recent_df = filtered_df.sort_values('Timestamp', ascending=False).head(10)
-    st.dataframe(
-        recent_df[[
-            'Date', 'Start_Time', 'End_Time', 'Duration_Minutes',
-            'From_Part', 'To_Part', 'Operator', 'Remarks'
-        ]],
-        use_container_width=True,
-        height=400,
-        column_config={
-            "Date": st.column_config.DateColumn("Date"),
-            "Start_Time": st.column_config.DatetimeColumn("Start Time"),
-            "End_Time": st.column_config.DatetimeColumn("End Time"),
-            "Duration_Minutes": st.column_config.NumberColumn("Duration (min)", format="%.1f")
-        }
-    )
-    
-    # Export button
-    st.download_button(
-        label=t['export_report'],
-        data=filtered_df.to_csv(index=False).encode('utf-8'),
-        file_name=f"changeover_report_{datetime.now().strftime('%Y%m%d')}.csv",
-        mime="text/csv",
-        use_container_width=True
-    )
-
-def main():
-    global lang_code  # Make language code available globally
-    
-    # Load translations, CSS and logo
-    translations = get_translations()
-    load_css()
-    logo = load_logo()
-    
-    # Language selection in sidebar
-    with st.sidebar:
-        if logo:
-            st.image(logo, use_column_width=True)
-        
-        st.markdown("### 🌐 Language Settings")
-        lang = st.selectbox("Select Language", ["English", "Bahasa Malaysia", "Bengali"], index=0)
-        lang_code = "en" if lang == "English" else "ms" if lang == "Bahasa Malaysia" else "bn"
-        t = translations[lang_code]
-        
-        # Navigation
-        st.markdown("### 📌 Navigation")
-        page = st.radio("Go to", ["Changeover Form", "Monitoring Dashboard"])
-    
-    # Main responsive layout with logo
-    header_html = f"""
-    <div class='header-container'>
-        <h2 style="color: var(--sumiputeh-green);">{t['title']}</h2>
-        <h4 style="color: var(--sumiputeh-darkgreen);">{t['company']}</h4>
-    </div>
-    """
-    st.markdown(header_html, unsafe_allow_html=True)
-    
-    # Page routing
-    if page == "Changeover Form":
-        show_changeover_form(t)
     else:
-        show_monitoring_dashboard(t)
+        st.warning(t['no_data'])
+    
+    st.markdown('</div>', unsafe_allow_html=True)  # Close button container
 
 if __name__ == "__main__":
     main()
