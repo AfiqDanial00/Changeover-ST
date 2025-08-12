@@ -30,8 +30,8 @@ def get_translations():
             "company": "Sumiputeh Steel Centre Sdn Bhd",
             "changeover_details": "1. Changeover Details",
             "date": "📅 Date",
-            "time_started": "⏱️ Start Time (HH:MM)",
-            "time_completed": "⏱️ Completion Time (HH:MM)",
+            "time_started": "⏱️ Start Time (HH:MM AM/PM)",
+            "time_completed": "⏱️ Completion Time (HH:MM AM/PM)",
             "product_from": "⬅️ From Part Number",
             "product_to": "➡️ To Part Number",
             "operator": "👷 Operator Name",
@@ -63,7 +63,7 @@ def get_translations():
             "remarks_placeholder": "Enter notes or issues...",
             "submit": "✅ Submit",
             "warning": "⚠️ Complete all fields",
-            "invalid_time": "⚠️ Please enter time in HH:MM format (e.g., 08:30)",
+            "invalid_time": "⚠️ Please enter time in HH:MM AM/PM format (e.g., 08:30 AM)",
             "success": "✔️ Submitted successfully!",
             "download": "📥 Download Records"
         },
@@ -72,8 +72,8 @@ def get_translations():
             "company": "Sumiputeh Steel Centre Sdn Bhd",
             "changeover_details": "1. Butiran Pertukaran",
             "date": "📅 Tarikh",
-            "time_started": "⏱️ Masa Mula (HH:MM)",
-            "time_completed": "⏱️ Masa Selesai (HH:MM)",
+            "time_started": "⏱️ Masa Mula (HH:MM AM/PM)",
+            "time_completed": "⏱️ Masa Selesai (HH:MM AM/PM)",
             "product_from": "⬅️ Kod Produk Asal",
             "product_to": "➡️ Kod Produk Baru",
             "operator": "👷 Nama Operator",
@@ -105,7 +105,7 @@ def get_translations():
             "remarks_placeholder": "Masukkan catatan atau masalah...",
             "submit": "✅ Hantar",
             "warning": "⚠️ Lengkapkan semua ruangan",
-            "invalid_time": "⚠️ Sila masukkan masa dalam format HH:MM (cth: 08:30)",
+            "invalid_time": "⚠️ Sila masukkan masa dalam format HH:MM AM/PM (cth: 08:30 AM)",
             "success": "✔️ Berjaya dihantar!",
             "download": "📥 Muat Turun Rekod"
         },
@@ -114,8 +114,8 @@ def get_translations():
             "company": "সুমিপুতে স্টিল সেন্টার এসডিএন বিএইচডি",
             "changeover_details": "১. পরিবর্তনের বিবরণ",
             "date": "📅 তারিখ",
-            "time_started": "⏱️ শুরুর সময় (HH:MM)",
-            "time_completed": "⏱️ শেষ সময় (HH:MM)",
+            "time_started": "⏱️ শুরুর সময় (HH:MM AM/PM)",
+            "time_completed": "⏱️ শেষ সময় (HH:MM AM/PM)",
             "product_from": "⬅️ পূর্ববর্তী পণ্যের কোড",
             "product_to": "➡️ নতুন পণ্যের কোড",
             "operator": "👷 অপারেটরের নাম",
@@ -147,7 +147,7 @@ def get_translations():
             "remarks_placeholder": "নোট বা সমস্যা লিখুন...",
             "submit": "✅ জমা দিন",
             "warning": "⚠️ সব ক্ষেত্র পূরণ করুন",
-            "invalid_time": "⚠️ সময় HH:MM ফরম্যাটে দিন (যেমন: 08:30)",
+            "invalid_time": "⚠️ সময় HH:MM AM/PM ফরম্যাটে দিন (যেমন: 08:30 AM)",
             "success": "✔️ সফলভাবে জমা হয়েছে!",
             "download": "📥 রেকর্ড ডাউনলোড করুন"
         }
@@ -239,14 +239,26 @@ def load_css():
     """, unsafe_allow_html=True)
 
 def parse_time_input(time_str):
-    """Parse free-form time input in HH:MM format"""
+    """Parse free-form time input in HH:MM AM/PM format"""
     try:
-        hours, minutes = map(int, time_str.split(':'))
-        if 0 <= hours < 24 and 0 <= minutes < 60:
-            return time(hours, minutes)
-        return None
-    except (ValueError, AttributeError):
-        return None
+        # Try to parse with AM/PM first
+        time_obj = datetime.strptime(time_str.strip().upper(), "%I:%M %p").time()
+        return time_obj
+    except ValueError:
+        try:
+            # Fallback to 24-hour format for backward compatibility
+            hours, minutes = map(int, time_str.split(':'))
+            if 0 <= hours < 24 and 0 <= minutes < 60:
+                return time(hours, minutes)
+            return None
+        except (ValueError, AttributeError):
+            return None
+
+def format_time_for_display(time_obj):
+    """Format time object to AM/PM string"""
+    if time_obj:
+        return time_obj.strftime("%I:%M %p").lstrip('0')
+    return ""
 
 def main():
     # Load translations, CSS and logo
@@ -276,8 +288,8 @@ def main():
     with col1:
         with st.expander(f"### {t['changeover_details']}", expanded=True):
             date = st.date_input(t['date'], value=datetime.today())
-            time_started_str = st.text_input(t['time_started'], value="08:00")
-            time_completed_str = st.text_input(t['time_completed'], value="08:30")
+            time_started_str = st.text_input(t['time_started'], value="8:00 AM")
+            time_completed_str = st.text_input(t['time_completed'], value="8:30 AM")
             product_from = st.text_input(t['product_from'])
             product_to = st.text_input(t['product_to'])
             operator_name = st.text_input(t['operator'])
