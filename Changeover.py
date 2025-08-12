@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, time
-import base64
 
 # Configure page
 st.set_page_config(
@@ -11,12 +10,8 @@ st.set_page_config(
     initial_sidebar_state="auto"
 )
 
-# Load logo
-def get_base64_logo(file_path):
-    with open(file_path, "rb") as f:
-        return base64.b64encode(f.read()).decode()
-
-logo_base64 = get_base64_logo("01.png")
+# Logo URL
+logo_url = "https://www.sumiputeh.com.my/website/public/img/logo/01.png"
 
 # Complete translation dictionaries
 def get_translations():
@@ -145,10 +140,10 @@ def main():
         lang = st.selectbox("Select Language", ["English"], index=0)
         t = translations["en"]
 
-    # Header with logo
+    # Header with logo from web address
     st.markdown(f"""
     <div class='header-container'>
-        <img src='data:image/png;base64,{logo_base64}' class='header-logo'>
+        <img src='{logo_url}' class='header-logo'>
         <div>
             <h2 style="margin: 0;">{t['title']}</h2>
             <h4 style="margin: 0;">{t['company']}</h4>
