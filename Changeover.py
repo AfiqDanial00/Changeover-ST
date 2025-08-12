@@ -2,12 +2,12 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# Configure page for mobile
+# Configure page
 st.set_page_config(
-    page_title="Shell Tube Checklist",
+    page_title="Shell Tube Changeover",
     layout="wide",
     page_icon="📋",
-    initial_sidebar_state="collapsed"  # Hide sidebar on mobile
+    initial_sidebar_state="auto"
 )
 
 # Complete translation dictionaries
@@ -137,57 +137,88 @@ translations = {
     }
 }
 
-# Mobile-friendly CSS
+# Responsive CSS
 st.markdown("""
 <style>
-    @media screen and (max-width: 768px) {
-        .stContainer > div { flex-direction: column !important; }
-        .main .block-container { padding: 1rem !important; }
-        .header-container { padding: 1rem !important; margin-bottom: 1rem !important; }
+    /* Base styles for all devices */
+    :root {
+        --primary-color: #005b96;
+        --secondary-color: #f5f7fa;
+        --text-color: #2c3e50;
+        --border-color: #d6dbdf;
+    }
+    
+    .header-container {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #2c3e50 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .stButton button {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        transition: all 0.3s;
+    }
+    
+    .stButton button:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+    
+    /* Mobile-specific styles */
+    @media (max-width: 768px) {
+        .header-container {
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
         .stTextInput input, .stSelectbox select, 
         .stDateInput input, .stTextArea textarea {
             padding: 0.5rem !important;
-            font-size: 14px !important;
         }
-        .stButton button { width: 100% !important; margin: 0.25rem 0 !important; }
-        .stCheckbox > label { padding: 0.5rem !important; font-size: 14px !important; }
-        section[data-testid="stSidebar"] { display: none; }
+        
+        .stButton button {
+            width: 100% !important;
+            margin: 0.25rem 0 !important;
+        }
+        
+        /* Stack columns vertically on mobile */
+        .stContainer > div {
+            flex-direction: column !important;
+        }
+        
+        /* Make expanders more compact */
+        .streamlit-expanderHeader {
+            padding: 0.75rem !important;
+        }
     }
     
-    .mobile-menu-btn {
-        display: none;
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 100;
-        background: #005b96 !important;
-        color: white !important;
-        border-radius: 50% !important;
-        width: 50px !important;
-        height: 50px !important;
-        font-size: 24px !important;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
-    
-    @media screen and (max-width: 768px) {
-        .mobile-menu-btn { display: block !important; }
+    /* Desktop-specific styles */
+    @media (min-width: 769px) {
+        .stButton button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+        }
+        
+        /* Sidebar styling */
+        section[data-testid="stSidebar"] {
+            padding: 1rem;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Mobile menu toggle
-st.markdown("""
-<button class="mobile-menu-btn" onclick="document.querySelector('section[data-testid=\"stSidebar\"]').style.display = 
-    document.querySelector('section[data-testid=\"stSidebar\"]').style.display === 'none' ? 'block' : 'none'">☰</button>
-""", unsafe_allow_html=True)
-
 # Language selection in sidebar
 with st.sidebar:
-    lang = st.selectbox("🌐 Language", ["English", "Bahasa Malaysia", "Bengali"], index=0)
+    st.markdown("### 🌐 Language Settings")
+    lang = st.selectbox("Select Language", ["English", "Bahasa Malaysia", "Bengali"], index=0)
     lang_code = "en" if lang == "English" else "ms" if lang == "Bahasa Malaysia" else "bn"
     t = translations[lang_code]
 
-# Mobile-optimized interface
+# Responsive layout
 st.markdown(f"""
 <div class='header-container'>
     <h2>{t['title']}</h2>
@@ -195,14 +226,21 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Form sections
-with st.expander(f"### {t['changeover_details']}", expanded=True):
-    date = st.date_input(t['date'], value=datetime.today())
-    shift = st.selectbox(t['shift'], t['shift_options'])
-    product_from = st.text_input(t['product_from'])
-    product_to = st.text_input(t['product_to'])
-    operator_name = st.text_input(t['operator'])
+# Dynamic layout - columns on desktop, stacked on mobile
+col1, col2 = st.columns([1, 1])
+with col1:
+    with st.expander(f"### {t['changeover_details']}", expanded=True):
+        date = st.date_input(t['date'], value=datetime.today())
+        shift = st.selectbox(t['shift'], t['shift_options'])
+        product_from = st.text_input(t['product_from'])
+        product_to = st.text_input(t['product_to'])
+        operator_name = st.text_input(t['operator'])
 
+with col2:
+    with st.expander(f"### {t['documentation']}", expanded=True):
+        remarks = st.text_area(t['remarks'], height=100, placeholder=t['remarks_placeholder'])
+
+# Checklist sections - single column on mobile
 with st.expander(f"### {t['length_adjustment']}", expanded=False):
     for step in t['length_steps']: st.checkbox(step)
 
@@ -212,10 +250,7 @@ with st.expander(f"### {t['three_point_die']}", expanded=False):
 with st.expander(f"### {t['burring_die']}", expanded=False):
     for step in t['burring_steps']: st.checkbox(step)
 
-with st.expander(f"### {t['documentation']}", expanded=False):
-    remarks = st.text_area(t['remarks'], height=100, placeholder=t['remarks_placeholder'])
-
-# Submission
+# Submission button - full width on mobile
 if st.button(f"✅ {t['submit']}", use_container_width=True):
     if not all([date, shift, product_from, product_to, operator_name]):
         st.warning(t['warning'])
