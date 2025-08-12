@@ -8,7 +8,7 @@ import os
 
 # Configure page
 st.set_page_config(
-    page_title="Shell Tube Changeover",
+    page_title="Shell Tube Changeover"
     layout="wide",
     page_icon="📋",
     initial_sidebar_state="auto"
