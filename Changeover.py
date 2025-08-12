@@ -216,7 +216,6 @@ def main():
     with col1:
         with st.expander(f"### {t['changeover_details']}", expanded=True):
             date = st.date_input(t['date'], value=datetime.today())
-            shift = st.selectbox(t['shift'], t['shift_options'])
             time_started_str = st.text_input(t['time_started'], value="08:00")
             time_completed_str = st.text_input(t['time_completed'], value="08:30")
             product_from = st.text_input(t['product_from'])
