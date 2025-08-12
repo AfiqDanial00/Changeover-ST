@@ -22,7 +22,7 @@ def load_logo():
     except:
         return None
 
-# Complete translation dictionaries
+# Complete translation dictionaries with Bengali added
 def get_translations():
     return {
         "en": {
@@ -108,10 +108,52 @@ def get_translations():
             "invalid_time": "⚠️ Sila masukkan masa dalam format HH:MM (cth: 08:30)",
             "success": "✔️ Berjaya dihantar!",
             "download": "📥 Muat Turun Rekod"
+        },
+        "bn": {
+            "title": "📋 শেল টিউব পরিবর্তন",
+            "company": "সুমিপুতে স্টিল সেন্টার এসডিএন বিএইচডি",
+            "changeover_details": "১. পরিবর্তনের বিবরণ",
+            "date": "📅 তারিখ",
+            "time_started": "⏱️ শুরুর সময় (HH:MM)",
+            "time_completed": "⏱️ শেষ সময় (HH:MM)",
+            "product_from": "⬅️ পূর্ববর্তী পণ্যের কোড",
+            "product_to": "➡️ নতুন পণ্যের কোড",
+            "operator": "👷 অপারেটরের নাম",
+            "length_adjustment": "২. দৈর্ঘ্য সমন্বয় (ধাপ ১-৪)",
+            "length_steps": [
+                "১. দৈর্ঘ্যের জন্য স্টপার পরিবর্তন/সমন্বয় করুন",
+                "২. ফেসিং/চ্যামফারিং-এ দৈর্ঘ্য সরবরাহ সমন্বয় করুন",
+                "৩. ফেসিং/চ্যামফারিং দৈর্ঘ্য সমন্বয় করুন",
+                "৪. এক্সপ্যান্ডার ডাই পরিবর্তন করুন"
+            ],
+            "three_point_die": "৩. ৩-পয়েন্ট ডাই (ধাপ ৫-৮)",
+            "three_point_steps": [
+                "৫. ৩-পয়েন্ট ডাইয়ের বোল্ট ঢিলা করুন",
+                "৬. ফর্কলিফ্ট দিয়ে ৩-পয়েন্ট ডাই সরান",
+                "৭. নতুন ৩-পয়েন্ট ডাই ইনস্টল করুন",
+                "৮. সোজা করুন এবং বোল্ট টাইট করুন"
+            ],
+            "burring_die": "৪. বারিং ডাই (ধাপ ৯-১৪)",
+            "burring_steps": [
+                "৯. বারিং ডাইয়ের বোল্ট ঢিলা করুন",
+                "১০. বারিং ডাই সরান",
+                "১১. নতুন বারিং ডাই ইনস্টল করুন",
+                "১২. সোজা করুন এবং বোল্ট টাইট করুন",
+                "১৩. পসিট অবস্থান সমন্বয় করুন",
+                "১৪. QC পরীক্ষা"
+            ],
+            "documentation": "৫. ডকুমেন্টেশন",
+            "remarks": "📝 নোট/সমস্যা",
+            "remarks_placeholder": "নোট বা সমস্যা লিখুন...",
+            "submit": "✅ জমা দিন",
+            "warning": "⚠️ সব ক্ষেত্র পূরণ করুন",
+            "invalid_time": "⚠️ সময় HH:MM ফরম্যাটে দিন (যেমন: 08:30)",
+            "success": "✔️ সফলভাবে জমা হয়েছে!",
+            "download": "📥 রেকর্ড ডাউনলোড করুন"
         }
     }
 
-# Branded CSS with Sumiputeh green color scheme & light/dark adaptation
+# Branded CSS with Sumiputeh green color scheme
 def load_css():
     st.markdown("""
     <style>
@@ -123,39 +165,81 @@ def load_css():
             --text-light: #333333;
             --text-dark: #ffffff;
         }
-        /* Light mode */
-        @media (prefers-color-scheme: light) {
-            body { color: var(--text-light); background-color: #ffffff; }
-            .header-container { background: white; color: var(--text-light); border-bottom: 4px solid var(--sumiputeh-green); }
-            .stExpander { background: var(--sumiputeh-lightgreen); border: 1px solid var(--sumiputeh-green); }
-            .stExpander .streamlit-expanderHeader { color: var(--sumiputeh-green); }
-            .stButton button { background: var(--sumiputeh-green); color: white; }
-            .stButton button:hover { background: var(--sumiputeh-darkgreen); }
+        
+        body {
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        /* Dark mode */
-        @media (prefers-color-scheme: dark) {
-            body { color: var(--text-dark); background-color: #121212; }
-            .header-container { background: #1e1e1e; color: var(--text-dark); border-bottom: 4px solid var(--sumiputeh-green); }
-            .stExpander { background: rgba(11, 125, 62, 0.1); border: 1px solid var(--sumiputeh-green); }
-            .stExpander .streamlit-expanderHeader { color: var(--sumiputeh-lightgreen); }
-            .stButton button { background: var(--sumiputeh-green); color: white; }
-            .stButton button:hover { background: var(--sumiputeh-darkgreen); }
+        
+        .header-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border-bottom: 4px solid var(--sumiputeh-green);
         }
-        input[type=checkbox]:checked {
-            accent-color: var(--sumiputeh-green);
+        
+        .logo {
+            max-width: 200px;
+            margin-bottom: 1rem;
         }
-        .logo { max-width: 200px; margin-bottom: 1rem; }
-        .success-message { background-color: #e6f7e6; color: var(--text-light); padding: 1rem; border-radius: 6px; margin: 1rem 0; border-left: 4px solid var(--sumiputeh-green); }
+        
+        .stButton button {
+            background: var(--sumiputeh-green);
+            color: white;
+            border: none;
+            transition: all 0.3s;
+            border-radius: 4px;
+        }
+        
+        .stButton button:hover {
+            background: var(--sumiputeh-darkgreen);
+            transform: translateY(-1px);
+        }
+        
+        .stExpander {
+            background: var(--sumiputeh-lightgreen);
+            border-radius: 8px;
+            border: 1px solid var(--sumiputeh-green);
+        }
+        
+        .stExpander .streamlit-expanderHeader {
+            color: var(--sumiputeh-green);
+            font-weight: 600;
+        }
+        
+        .success-message {
+            background-color: #e6f7e6;
+            color: var(--text-light);
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--sumiputeh-green);
+        }
+        
         @media (max-width: 768px) {
-            .header-container { padding: 0.5rem; }
-            .logo { max-width: 150px; }
-            .stTextInput input, .stSelectbox select, .stDateInput input, .stTextArea textarea, .stTimeInput input { padding: 0.5rem !important; }
-            .stButton button { width: 100% !important; }
+            .header-container {
+                padding: 0.5rem;
+            }
+            .logo {
+                max-width: 150px;
+            }
+            .stTextInput input, .stSelectbox select, 
+            .stDateInput input, .stTextArea textarea,
+            .stTimeInput input {
+                padding: 0.5rem !important;
+            }
+            .stButton button {
+                width: 100% !important;
+            }
         }
     </style>
     """, unsafe_allow_html=True)
 
 def parse_time_input(time_str):
+    """Parse free-form time input in HH:MM format"""
     try:
         hours, minutes = map(int, time_str.split(':'))
         if 0 <= hours < 24 and 0 <= minutes < 60:
@@ -165,16 +249,19 @@ def parse_time_input(time_str):
         return None
 
 def main():
+    # Load translations, CSS and logo
     translations = get_translations()
     load_css()
     logo = load_logo()
     
+    # Language selection in sidebar
     with st.sidebar:
         st.markdown("### 🌐 Language Settings")
-        lang = st.selectbox("Select Language", ["English", "Bahasa Malaysia"], index=0)
-        lang_code = "en" if lang == "English" else "ms"
+        lang = st.selectbox("Select Language", ["English", "Bahasa Malaysia", "Bengali"], index=0)
+        lang_code = "en" if lang == "English" else "ms" if lang == "Bahasa Malaysia" else "bn"
         t = translations[lang_code]
 
+    # Main responsive layout with logo
     header_html = f"""
     <div class='header-container'>
         <img src="https://www.sumiputeh.com.my/website/public/img/logo/01.png" class="logo">
@@ -184,6 +271,7 @@ def main():
     """
     st.markdown(header_html, unsafe_allow_html=True)
 
+    # Dynamic layout
     col1, col2 = st.columns([1, 1])
     with col1:
         with st.expander(f"### {t['changeover_details']}", expanded=True):
@@ -198,6 +286,7 @@ def main():
         with st.expander(f"### {t['documentation']}", expanded=True):
             remarks = st.text_area(t['remarks'], height=100, placeholder=t['remarks_placeholder'])
 
+    # Checklist sections
     with st.expander(f"### {t['length_adjustment']}", expanded=False):
         for step in t['length_steps']: st.checkbox(step)
 
@@ -207,6 +296,7 @@ def main():
     with st.expander(f"### {t['burring_die']}", expanded=False):
         for step in t['burring_steps']: st.checkbox(step)
 
+    # Submission
     if st.button(f"✅ {t['submit']}", use_container_width=True):
         time_started = parse_time_input(time_started_str)
         time_completed = parse_time_input(time_completed_str)
