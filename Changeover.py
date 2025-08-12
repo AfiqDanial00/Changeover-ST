@@ -258,8 +258,6 @@ def main():
         time_started = parse_time_input(time_started_str)
         time_completed = parse_time_input(time_completed_str)
         
-        if not all([date, shift, product_from, product_to, operator_name]):
-            st.warning(t['warning'])
         elif not time_started or not time_completed:
             st.warning(t['invalid_time'])
         else:
