@@ -4,7 +4,6 @@ from datetime import datetime, time
 from PIL import Image
 import requests
 from io import BytesIO
-import os
 
 # Configure page
 st.set_page_config(
@@ -31,8 +30,8 @@ def get_translations():
             "company": "Sumiputeh Steel Centre Sdn Bhd",
             "changeover_details": "1. Changeover Details",
             "date": "📅 Date",
-            "time_started": "⏱️ Start Time (HH:MM)",
-            "time_completed": "⏱️ Completion Time (HH:MM)",
+            "time_started": "⏱️ Start Time (HH:MM AM/PM)",
+            "time_completed": "⏱️ Completion Time (HH:MM AM/PM)",
             "product_from": "⬅️ From Part Number",
             "product_to": "➡️ To Part Number",
             "operator": "👷 Operator Name",
@@ -64,17 +63,18 @@ def get_translations():
             "remarks_placeholder": "Enter notes or issues...",
             "submit": "✅ Submit",
             "warning": "⚠️ Complete all fields",
-            "invalid_time": "⚠️ Please enter time in HH:MM format (e.g., 08:30)",
+            "invalid_time": "⚠️ Please enter time in HH:MM AM/PM format (e.g., 08:30 AM)",
             "success": "✔️ Submitted successfully!",
-            "download": "📥 Download Records"
+            "download": "📥 Download Records",
+            "summary": "📊 Summary"
         },
         "ms": {
             "title": "📋 Tukar Model Shell Tube",
             "company": "Sumiputeh Steel Centre Sdn Bhd",
             "changeover_details": "1. Butiran Pertukaran",
             "date": "📅 Tarikh",
-            "time_started": "⏱️ Masa Mula (HH:MM)",
-            "time_completed": "⏱️ Masa Selesai (HH:MM)",
+            "time_started": "⏱️ Masa Mula (HH:MM AM/PM)",
+            "time_completed": "⏱️ Masa Selesai (HH:MM AM/PM)",
             "product_from": "⬅️ Kod Produk Asal",
             "product_to": "➡️ Kod Produk Baru",
             "operator": "👷 Nama Operator",
@@ -106,17 +106,18 @@ def get_translations():
             "remarks_placeholder": "Masukkan catatan atau masalah...",
             "submit": "✅ Hantar",
             "warning": "⚠️ Lengkapkan semua ruangan",
-            "invalid_time": "⚠️ Sila masukkan masa dalam format HH:MM (cth: 08:30)",
+            "invalid_time": "⚠️ Sila masukkan masa dalam format HH:MM AM/PM (cth: 08:30 AM)",
             "success": "✔️ Berjaya dihantar!",
-            "download": "📥 Muat Turun Rekod"
+            "download": "📥 Muat Turun Rekod",
+            "summary": "📊 Ringkasan"
         },
         "bn": {
             "title": "📋 শেল টিউব পরিবর্তন",
             "company": "সুমিপুতে স্টিল সেন্টার এসডিএন বিএইচডি",
             "changeover_details": "১. পরিবর্তনের বিবরণ",
             "date": "📅 তারিখ",
-            "time_started": "⏱️ শুরুর সময় (HH:MM)",
-            "time_completed": "⏱️ শেষ সময় (HH:MM)",
+            "time_started": "⏱️ শুরুর সময় (HH:MM AM/PM)",
+            "time_completed": "⏱️ শেষ সময় (HH:MM AM/PM)",
             "product_from": "⬅️ পূর্ববর্তী পণ্যের কোড",
             "product_to": "➡️ নতুন পণ্যের কোড",
             "operator": "👷 অপারেটরের নাম",
@@ -148,9 +149,10 @@ def get_translations():
             "remarks_placeholder": "নোট বা সমস্যা লিখুন...",
             "submit": "✅ জমা দিন",
             "warning": "⚠️ সব ক্ষেত্র পূরণ করুন",
-            "invalid_time": "⚠️ সময় HH:MM ফরম্যাটে দিন (যেমন: 08:30)",
+            "invalid_time": "⚠️ সময় HH:MM AM/PM ফরম্যাটে দিন (যেমন: 08:30 AM)",
             "success": "✔️ সফলভাবে জমা হয়েছে!",
-            "download": "📥 রেকর্ড ডাউনলোড করুন"
+            "download": "📥 রেকর্ড ডাউনলোড করুন",
+            "summary": "📊 সারাংশ"
         }
     }
 
@@ -239,119 +241,144 @@ def load_css():
     </style>
     """, unsafe_allow_html=True)
 
-def parse_time_input(time_str):
-    """Parse free-form time input in HH:MM format"""
+def parse_time_input_ampm(time_str):
+    """Parse time input in HH:MM AM/PM format"""
     try:
-        hours, minutes = map(int, time_str.split(':'))
-        if 0 <= hours < 24 and 0 <= minutes < 60:
-            return time(hours, minutes)
+        dt = datetime.strptime(time_str.strip(), "%I:%M %p")
+        return dt.time()
+    except Exception:
         return None
-    except (ValueError, AttributeError):
-        return None
+
+def format_time_ampm(dt):
+    """Format datetime or time object to HH:MM AM/PM string"""
+    if isinstance(dt, datetime):
+        return dt.strftime("%I:%M %p")
+    elif isinstance(dt, time):
+        return dt.strftime("%I:%M %p")
+    else:
+        return str(dt)
 
 def main():
+    # Load translations, CSS and logo
+    translations = get_translations()
+    load_css()
+    logo = load_logo()
+    
+    # Language selection in sidebar
+    with st.sidebar:
+        st.markdown("### 🌐 Language Settings")
+        lang = st.selectbox("Select Language", ["English", "Bahasa Malaysia", "Bengali"], index=0)
+        lang_code = "en" if lang == "English" else "ms" if lang == "Bahasa Malaysia" else "bn"
+        t = translations[lang_code]
+
+    # Main responsive layout with logo
+    header_html = f"""
+    <div class='header-container'>
+        <img src="https://www.sumiputeh.com.my/website/public/img/logo/01.png" class="logo">
+        <h2 style="color: var(--sumiputeh-green);">{t['title']}</h2>
+        <h4 style="color: var(--sumiputeh-darkgreen);">{t['company']}</h4>
+    </div>
+    """
+    st.markdown(header_html, unsafe_allow_html=True)
+
+    # Dynamic layout
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        with st.expander(f"### {t['changeover_details']}", expanded=True):
+            date = st.date_input(t['date'], value=datetime.today())
+            time_started_str = st.text_input(t['time_started'], value="08:00 AM")
+            time_completed_str = st.text_input(t['time_completed'], value="08:30 AM")
+            product_from = st.text_input(t['product_from'])
+            product_to = st.text_input(t['product_to'])
+            operator_name = st.text_input(t['operator'])
+
+    with col2:
+        with st.expander(f"### {t['documentation']}", expanded=True):
+            remarks = st.text_area(t['remarks'], height=100, placeholder=t['remarks_placeholder'])
+
+    # Checklist sections
+    with st.expander(f"### {t['length_adjustment']}", expanded=False):
+        for step in t['length_steps']: st.checkbox(step)
+
+    with st.expander(f"### {t['three_point_die']}", expanded=False):
+        for step in t['three_point_steps']: st.checkbox(step)
+
+    with st.expander(f"### {t['burring_die']}", expanded=False):
+        for step in t['burring_steps']: st.checkbox(step)
+
+    # Load existing data for summary and display
     try:
-        st.write("Debug: App started")
-        st.write("Working directory:", os.getcwd())
-        st.write("Files in directory:", os.listdir())
+        df_all = pd.read_csv("checklist_records.csv", parse_dates=["Start_Time", "End_Time", "Timestamp"])
+    except:
+        df_all = pd.DataFrame()
+
+    # Show summary metrics
+    if not df_all.empty:
+        st.markdown(f"### {t['summary']}")
+        total_submissions = len(df_all)
+        avg_duration = df_all["Duration_Minutes"].mean()
+        st.write(f"**Total submissions:** {total_submissions}")
+        st.write(f"**Average duration (minutes):** {avg_duration:.2f}")
+
+    # Show records except last 5
+    if not df_all.empty and len(df_all) > 5:
+        df_display = df_all.iloc[:-5].copy()
+    else:
+        df_display = df_all.copy()
+
+    # Format Start_Time and End_Time to 12-hour AM/PM strings for display
+    if not df_display.empty:
+        df_display["Start_Time"] = df_display["Start_Time"].dt.strftime("%I:%M %p")
+        df_display["End_Time"] = df_display["End_Time"].dt.strftime("%I:%M %p")
+
+    st.markdown(f"### {t['download']}")
+    st.download_button(
+        t['download'],
+        data=df_all.to_csv(index=False),
+        file_name="checklist_records.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
+
+    # Display data table (without last 5 records)
+    if not df_display.empty:
+        st.dataframe(df_display)
+
+    # Submission
+    if st.button(f"✅ {t['submit']}", use_container_width=True):
+        time_started = parse_time_input_ampm(time_started_str)
+        time_completed = parse_time_input_ampm(time_completed_str)
         
-        # Load translations, CSS and logo
-        translations = get_translations()
-        load_css()
-        logo = load_logo()
-        
-        # Language selection in sidebar
-        with st.sidebar:
-            st.markdown("### 🌐 Language Settings")
-            lang = st.selectbox("Select Language", ["English", "Bahasa Malaysia", "Bengali"], index=0)
-            lang_code = "en" if lang == "English" else "ms" if lang == "Bahasa Malaysia" else "bn"
-            t = translations[lang_code]
-            st.write(f"Debug: Selected language - {lang} ({lang_code})")
-            st.write(f"Debug: Title - {t['title']}")
-
-        # Main responsive layout with logo
-        header_html = f"""
-        <div class='header-container'>
-            <img src="https://www.sumiputeh.com.my/website/public/img/logo/01.png" class="logo">
-            <h2 style="color: var(--sumiputeh-green);">{t['title']}</h2>
-            <h4 style="color: var(--sumiputeh-darkgreen);">{t['company']}</h4>
-        </div>
-        """
-        st.markdown(header_html, unsafe_allow_html=True)
-
-        # Dynamic layout
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            with st.expander(f"### {t['changeover_details']}", expanded=True):
-                date = st.date_input(t['date'], value=datetime.today())
-                time_started_str = st.text_input(t['time_started'], value="08:00")
-                time_completed_str = st.text_input(t['time_completed'], value="08:30")
-                product_from = st.text_input(t['product_from'])
-                product_to = st.text_input(t['product_to'])
-                operator_name = st.text_input(t['operator'])
-
-        with col2:
-            with st.expander(f"### {t['documentation']}", expanded=True):
-                remarks = st.text_area(t['remarks'], height=100, placeholder=t['remarks_placeholder'])
-
-        # Checklist sections
-        with st.expander(f"### {t['length_adjustment']}", expanded=False):
-            for step in t['length_steps']: st.checkbox(step)
-
-        with st.expander(f"### {t['three_point_die']}", expanded=False):
-            for step in t['three_point_steps']: st.checkbox(step)
-
-        with st.expander(f"### {t['burring_die']}", expanded=False):
-            for step in t['burring_steps']: st.checkbox(step)
-
-        # Submission
-        if st.button(f"✅ {t['submit']}", use_container_width=True):
-            time_started = parse_time_input(time_started_str)
-            time_completed = parse_time_input(time_completed_str)
+        if not all([date, product_from, product_to, operator_name]):
+            st.warning(t['warning'])
+        elif not time_started or not time_completed:
+            st.warning(t['invalid_time'])
+        else:
+            start_datetime = datetime.combine(date, time_started)
+            end_datetime = datetime.combine(date, time_completed)
+            duration = end_datetime - start_datetime
             
-            if not all([date, product_from, product_to, operator_name]):
-                st.warning(t['warning'])
-            elif not time_started or not time_completed:
-                st.warning(t['invalid_time'])
-            else:
-                start_datetime = datetime.combine(date, time_started)
-                end_datetime = datetime.combine(date, time_completed)
-                duration = end_datetime - start_datetime
-                
-                data = {
-                    "Date": [date],
-                    "Start_Time": [start_datetime],
-                    "End_Time": [end_datetime],
-                    "Duration_Minutes": [round(duration.total_seconds() / 60, 2)],
-                    "From_Part": [product_from],
-                    "To_Part": [product_to],
-                    "Operator": [operator_name],
-                    **{step: [True] for step in t['length_steps'] + t['three_point_steps'] + t['burring_steps']},
-                    "Remarks": [remarks],
-                    "Timestamp": [datetime.now()],
-                    "Language": [lang]
-                }
-                
-                df = pd.DataFrame(data)
-                
-                try:
-                    existing = pd.read_csv("checklist_records.csv")
-                    st.write(f"Debug: Existing records loaded, {len(existing)} rows")
-                    df = pd.concat([existing, df], ignore_index=True)
-                except Exception as e:
-                    st.write(f"Debug: No existing file or error loading CSV: {e}")
-                    
-                df.to_csv("checklist_records.csv", index=False)
-                st.markdown(f'<div class="success-message">{t["success"]} Duration: {duration}</div>', unsafe_allow_html=True)
-                st.download_button(
-                    t['download'],
-                    data=df.to_csv(index=False),
-                    file_name="checklist_records.csv",
-                    mime="text/csv",
-                    use_container_width=True
-                )
-    except Exception as e:
-        st.error(f"Error in app: {e}")
-
-if __name__ == "__main__":
-    main()
+            data = {
+                "Date": [date],
+                "Start_Time": [start_datetime],
+                "End_Time": [end_datetime],
+                "Duration_Minutes": [round(duration.total_seconds() / 60, 2)],
+                "From_Part": [product_from],
+                "To_Part": [product_to],
+                "Operator": [operator_name],
+                **{step: [True] for step in t['length_steps'] + t['three_point_steps'] + t['burring_steps']},
+                "Remarks": [remarks],
+                "Timestamp": [datetime.now()],
+                "Language": [lang]
+            }
+            
+            df_new = pd.DataFrame(data)
+            
+            try:
+                df_existing = pd.read_csv("checklist_records.csv")
+                df_all = pd.concat([df_existing, df_new], ignore_index=True)
+            except:
+                df_all = df_new
+            
+            df_all.to_csv("checklist_records.csv", index=False)
+            st.markdown(f'<div class="success-message">{t["success"]} Duration: {duration}</div>', unsafe_allow_html=True)
