@@ -30,12 +30,10 @@ def get_translations():
             "company": "Sumiputeh Steel Centre Sdn Bhd",
             "changeover_details": "1. Changeover Details",
             "date": "📅 Date",
-            "shift": "🔄 Shift",
-            "shift_options": ["Morning", "Afternoon", "Night"],
             "time_started": "⏱️ Start Time (HH:MM)",
             "time_completed": "⏱️ Completion Time (HH:MM)",
-            "product_from": "⬅️ From Product Code",
-            "product_to": "➡️ To Product Code",
+            "product_from": "⬅️ From Part Number",
+            "product_to": "➡️ To Part Number",
             "operator": "👷 Operator Name",
             "length_adjustment": "2. Length Adjustment (Steps 1-4)",
             "length_steps": [
@@ -70,12 +68,10 @@ def get_translations():
             "download": "📥 Download Records"
         },
         "ms": {
-            "title": "📋 Tukar Tiub Shell",
+            "title": "📋 Tukar Model Shell Tube",
             "company": "Sumiputeh Steel Centre Sdn Bhd",
             "changeover_details": "1. Butiran Pertukaran",
             "date": "📅 Tarikh",
-            "shift": "🔄 Syif",
-            "shift_options": ["Pagi", "Petang", "Malam"],
             "time_started": "⏱️ Masa Mula (HH:MM)",
             "time_completed": "⏱️ Masa Selesai (HH:MM)",
             "product_from": "⬅️ Kod Produk Asal",
@@ -118,8 +114,6 @@ def get_translations():
             "company": "সুমিপুতেহ স্টিল সেন্টার এসডিএন বিএইচডি",
             "changeover_details": "১. চেঞ্জওভার বিবরণ",
             "date": "📅 তারিখ",
-            "shift": "🔄 শিফট",
-            "shift_options": ["সকাল", "দুপুর", "রাত"],
             "time_started": "⏱️ শুরুর সময় (HH:MM)",
             "time_completed": "⏱️ শেষ সময় (HH:MM)",
             "product_from": "⬅️ পূর্ববর্তী পণ্যের কোড",
@@ -241,7 +235,6 @@ def main():
     with col1:
         with st.expander(f"### {t['changeover_details']}", expanded=True):
             date = st.date_input(t['date'], value=datetime.today())
-            shift = st.selectbox(t['shift'], t['shift_options'])
             time_started_str = st.text_input(t['time_started'], value="08:00")
             time_completed_str = st.text_input(t['time_completed'], value="08:30")
             product_from = st.text_input(t['product_from'])
@@ -279,9 +272,8 @@ def main():
                 "Start_Time": [start_datetime],
                 "End_Time": [end_datetime],
                 "Duration_Minutes": [round(duration.total_seconds() / 60, 2)],
-                "Shift": [shift],
-                "From_Product": [product_from],
-                "To_Product": [product_to],
+                "From_Part": [part_from],
+                "To_Part": [part_to],
                 "Operator": [operator_name],
                 **{step: [True] for step in t['length_steps'] + t['three_point_steps'] + t['burring_steps']},
                 "Remarks": [remarks],
